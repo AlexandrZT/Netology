@@ -1,26 +1,5 @@
 import os
 
-work_path = ''
-work_file = 'cook_book.dat'
-
-cook_book = {
-      'яйчница': [
-        {'ingridient_name': 'яйца', 'quantity': 2, 'measure': 'шт.'},
-        {'ingridient_name': 'помидоры', 'quantity': 100, 'measure': 'гр.'}
-        ],
-      'стейк': [
-        {'ingridient_name': 'говядина', 'quantity': 300, 'measure': 'гр.'},
-        {'ingridient_name': 'специи', 'quantity': 5, 'measure': 'гр.'},
-        {'ingridient_name': 'масло', 'quantity': 10, 'measure': 'мл.'}
-        ],
-      'салат': [
-        {'ingridient_name': 'помидоры', 'quantity': 100, 'measure': 'гр.'},
-        {'ingridient_name': 'огурцы', 'quantity': 100, 'measure': 'гр.'},
-        {'ingridient_name': 'масло', 'quantity': 100, 'measure': 'мл.'},
-        {'ingridient_name': 'лук', 'quantity': 1, 'measure': 'шт.'}
-        ]
-      }
-
 def load_cook_book(file_name):
     loaded_cook_book = {}
     recepie_cntr = 0
@@ -42,9 +21,8 @@ def load_cook_book(file_name):
                                                        'quantity': int(list_ingedients[1].strip()), 'measure': list_ingedients[2].strip()})
     else:
         print('Ошибка загрузки файла рецептов.')
-        return -1
+        return False
     print('Загружено {} рецепта(ов). {}'.format(recepie_cntr, loaded_cook_book))
-
     return loaded_cook_book
 
 def get_shop_list_by_dishes(dishes, person_count, cook_book):
@@ -67,9 +45,11 @@ def print_shop_list(shop_list):
 
 
 def create_shop_list():
-    #cook_book_file = input('Введите имя файла:')
-    cook_book_file = 'cook_book.dat'
-    wrk_cook_book = load_cook_book(cook_book_file)
+    cook_book_file = input('Введите имя файла:')
+    if cook_book_file:
+        wrk_cook_book = load_cook_book(cook_book_file)
+    else:
+        print("Не загружен файл рецептов. Выход.")
     person_count = int(input('Введите количество человек: '))
     dishes = input('Введите блюда в расчете на одного человека (через запятую): ') \
         .lower().split(', ')
