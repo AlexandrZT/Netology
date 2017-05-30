@@ -3,13 +3,13 @@ import os
 def load_cook_book(file_name):
     loaded_cook_book = {}
     recepie_cntr = 0
-    Read_File = True
+    read_file = True
     if os.path.exists(file_name):
-        with open(file_name,'r') as f:
-            while Read_File:
+        with open(file_name, 'r') as f:
+            while read_file:
                 recepie_name = f.readline().lower().strip()
-                if not recepie_name:
-                    Read_File = False
+                if recepie_name == '':
+                    read_file = False
                     continue
                 ingredients_num = int(f.readline())
                 loaded_cook_book[recepie_name] = []
@@ -22,7 +22,7 @@ def load_cook_book(file_name):
     else:
         print('Ошибка загрузки файла рецептов.')
         return False
-    print('Загружено {} рецепта(ов). {}'.format(recepie_cntr, loaded_cook_book))
+    print('Загружено {} рецепта(ов).'.format(recepie_cntr))
     return loaded_cook_book
 
 def get_shop_list_by_dishes(dishes, person_count, cook_book):
@@ -49,6 +49,7 @@ def create_shop_list():
     if cook_book_file:
         wrk_cook_book = load_cook_book(cook_book_file)
     else:
+        wrk_cook_book = {}
         print("Не загружен файл рецептов. Выход.")
     person_count = int(input('Введите количество человек: '))
     dishes = input('Введите блюда в расчете на одного человека (через запятую): ') \
