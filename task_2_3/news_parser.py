@@ -18,7 +18,10 @@ def load_file_contents_json(file_data):
     file_data_parsed = json.loads(file_data)
     cleaned_file_info = ''
     for info in file_data_parsed['rss']['channel']['item']:
-        readed_info = str(info['description']['__cdata'])
+        if type(info['description']) == str:
+            readed_info = info['description']
+        elif type(info['description']) == dict:
+            readed_info = info['description']['__cdata']
         cleaned_info = re.sub('<[^<]+?>|; |,|\.|"|/|\n', '', readed_info)
         cleaned_file_info += cleaned_info
     return cleaned_file_info
@@ -63,8 +66,7 @@ def statistics_analyze(work_data):
 
 
 def analyze_news():
-    analyzed_files = ['newscy.xml']
-    analyzed_files_1 = ['newsafr.json', 'newscy.json', 'newsfr.json', 'newsit.json']
+    analyzed_files = ['newsafr.json', 'newscy.json', 'newsfr.json', 'newsit.json']
     files_statistics = {}
     for file in analyzed_files:
         ld_data = load_file(file)
