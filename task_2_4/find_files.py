@@ -18,9 +18,10 @@ def search_data(search_at_files):
             break
         file_list = []
         for file in file_list_iter:
-            if search_string in open(file).read():
-                file_list.append(file)
-                print(file)
+            with open(file, 'r') as fsearch:
+                if search_string in fsearch.read():
+                    file_list.append(file)
+                    print(file)
         print('{}'.format(len(file_list)))
         file_list_iter = file_list
 
