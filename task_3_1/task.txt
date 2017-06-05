@@ -1,4 +1,5 @@
 https://ru.surveymonkey.com/r/Z9SVR58
 https://ru.surveymonkey.com/survey-thanks/?sm=nMXSfyPkjdSc_2Fz1FH_2FYo1P_2B4VdMYCqdg_2BpX28J9LOR0Mhj1O785ialvnr2K8L5gF0KmfcvoHJcnI3ikYjPn_2BXg_3D_3D
-
+Решение 10го задания:
 [item for item in mass if not((item % 3) | (item % 4))]
+Тест закончил 05.06.2017 06:44 по московскому времени.
