@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
 import json
-import xml
 import xml.etree.ElementTree as ET
 import chardet
 import re
 
+
 def load_file_contents_xml(file_data):
-    file_data_parsed = ET.parse(file_data).getroot()
-    print(file_data_parsed)
-    for news_description in file_data_parsed.findall('description'):
-        print(news_description)
-    print('Exit')
+    root_parsed = ET.fromstring(file_data)
+    channel_parsed = root_parsed[0]
+    file_data_parsed = ''
+    easy_elems = channel_parsed.findall('description')
+    if easy_elems:
+        for elem in easy_elems:
+            cleared_data = re.sub('<[^<]+?>|; |,|\.|"|/|\n', '', elem.text)
+            file_data_parsed += cleared_data
+
+    for desc_element in channel_parsed:
+        search_elem = desc_element.findall('description')
+        if search_elem:
+            for elem in search_elem:
+                cleared_data = re.sub('<[^<]+?>|; |,|\.|"|/|\n', '', elem.text)
+                file_data_parsed += cleared_data
     return file_data_parsed
 
 
@@ -31,11 +41,11 @@ def load_file(file_name):
     with open(file_name, 'rb') as fhndl:
         file_data = fhndl.read()
     char_result = chardet.detect(file_data)
-    str_data = file_data.decode(encoding = char_result['encoding'])
+    str_data = file_data.decode(encoding=char_result['encoding'])
     if file_name[-5:] == '.json':
         res_string = load_file_contents_json(str_data)
     elif file_name[-4:] == '.xml':
-        res_string = load_file_contents_xml(file_name)
+        res_string = load_file_contents_xml(str_data)
     else:
         res_string = ''
         print('Не поддерживаемый тип файла')
@@ -66,7 +76,8 @@ def statistics_analyze(work_data):
 
 
 def analyze_news():
-    analyzed_files = ['newsafr.json', 'newscy.json', 'newsfr.json', 'newsit.json']
+    analyzed_files = ['newsafr.json', 'newscy.json', 'newsfr.json', 'newsit.json', 'newsafr.xml',
+                      'newscy.xml', 'newsfr.xml', 'newsit.xml']
     files_statistics = {}
     for file in analyzed_files:
         ld_data = load_file(file)
