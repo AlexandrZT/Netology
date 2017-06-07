@@ -1,5 +1,6 @@
 import os
 
+
 def load_cook_book(file_name):
     loaded_cook_book = {}
     read_file = True
@@ -23,6 +24,7 @@ def load_cook_book(file_name):
         return False
     print('Загружено {} рецепта(ов).'.format(len(loaded_cook_book)))
     return loaded_cook_book
+
 
 def get_shop_list_by_dishes(dishes, person_count, cook_book):
     shop_list = {}
@@ -48,7 +50,6 @@ def create_shop_list():
     if cook_book_file:
         wrk_cook_book = load_cook_book(cook_book_file)
     else:
-        wrk_cook_book = {}
         print("Не загружен файл рецептов. Выход.")
         return
     person_count = int(input('Введите количество человек: '))
