@@ -57,9 +57,7 @@ def translate_it(text, file_name=None, save_file=None, from_language=None, to_la
         params['lang'] = '{}-{}'.format(from_language, to_languge)
     else:
         params['lang'] = to_languge
-    print(params)
     response = requests.post(url, params=params).json()
-    print(response)
     translation = urllib.parse.unquote(response['text'][0])
     if save_file:
         with open(save_file, 'w') as wfile:
