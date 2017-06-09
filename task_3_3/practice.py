@@ -1,6 +1,8 @@
 import requests
 import urllib
 import os
+import chardet
+
 
 def translate_it(text, file_name=None, save_file=None, from_language=None, to_languge='ru'):
     """
@@ -34,7 +36,7 @@ def translate_it(text, file_name=None, save_file=None, from_language=None, to_la
     to_translate = ''
     if file_name:
         file_stat =  os.stat(file_name)
-        if file_stat.st_size % 1024 > 10:
+        if file_stat.st_size / 1024 > 10:
            print('Слишком большой файл.')
            return
         else:
@@ -42,25 +44,33 @@ def translate_it(text, file_name=None, save_file=None, from_language=None, to_la
                 to_translate = rfile.read()
     if text:
         to_translate = text
+        #to_translate = bytearray()
+        #to_translate.extend(map(ord, text))
+
+    #char_result = chardet.detect(to_translate)
+    #str_data = to_translate.decode(encoding=char_result['encoding'])
 
     params = {
         'key': key,
-        'lang': 'ru-en',
-        'text': urllib.parse.quote_plus(to_translate),
+        #'text': urllib.parse.quote_plus(to_translate),
+        'text': to_translate,
+        'options': 1,
     }
     if from_language:
         params['lang'] = '{}-{}'.format(from_language, to_languge)
     else:
         params['lang'] = to_languge
-
-    response = requests.get(url, params=params).json()
+    print(params)
+    response = requests.post(url, params=params).json()
     print(response)
     if save_file:
         with open(save_file, 'w') as wfile:
             wfile.write(response)
         return
     else:
-        return ' '.join(response.get('text', []))
+        translation = urllib.parse.unquote(response['text'][0])
+        print(response['text'])
+        return translation
 
 
 def show_avaliable_languages():
@@ -92,5 +102,5 @@ def detect_language(text):
 
 #print('Предпологаемый язык: {}'.format(detect_language("Rompiendo con una tradiciГіn diplomГЎtica con "))
 #show_avaliable_languages()
-a = translate_it("Rompiendo con una tradiciГіn diplomГЎtica con ")
+a = translate_it('',file_name='DE.txt')
 print(a)
