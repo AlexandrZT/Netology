@@ -1,7 +1,6 @@
 import requests
 import urllib
 import os
-import chardet
 
 
 def translate_it(text, file_name=None, save_file=None, from_language=None, to_languge='ru'):
@@ -43,13 +42,11 @@ def translate_it(text, file_name=None, save_file=None, from_language=None, to_la
             with open(file_name, 'r') as rfile:
                 to_translate = rfile.read()
     if text:
-        to_translate = text
-        #to_translate = bytearray()
-        #to_translate.extend(map(ord, text))
-
-    #char_result = chardet.detect(to_translate)
-    #str_data = to_translate.decode(encoding=char_result['encoding'])
-
+        if len(text) > 10000:
+            print('Слишком длинный текст.')
+            return
+        else:
+            to_translate = text
     params = {
         'key': key,
         #'text': urllib.parse.quote_plus(to_translate),
@@ -63,13 +60,12 @@ def translate_it(text, file_name=None, save_file=None, from_language=None, to_la
     print(params)
     response = requests.post(url, params=params).json()
     print(response)
+    translation = urllib.parse.unquote(response['text'][0])
     if save_file:
         with open(save_file, 'w') as wfile:
-            wfile.write(response)
+            wfile.write(translation)
         return
     else:
-        translation = urllib.parse.unquote(response['text'][0])
-        print(response['text'])
         return translation
 
 
@@ -102,5 +98,6 @@ def detect_language(text):
 
 #print('Предпологаемый язык: {}'.format(detect_language("Rompiendo con una tradiciГіn diplomГЎtica con "))
 #show_avaliable_languages()
-a = translate_it('',file_name='DE.txt')
-print(a)
+transl = translate_it('',file_name='DE.txt')
+if transl:
+    print(transl)
