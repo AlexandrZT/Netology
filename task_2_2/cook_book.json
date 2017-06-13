@@ -1,1 +1,70 @@
-{"омлет": [{"ingridient_name": "€йца", "quantity": 2, "measure": "шт"}, {"ingridient_name": "молоко", "quantity": 50, "measure": "г"}, {"ingridient_name": "помидор", "quantity": 100, "measure": "мл"}], "€ичница": [{"ingridient_name": "€йца", "quantity": 2, "measure": "шт"}, {"ingridient_name": "помидоры", "quantity": 100, "measure": "г"}], "стейк": [{"ingridient_name": "гов€дина", "quantity": 300, "measure": "г"}, {"ingridient_name": "специи", "quantity": 5, "measure": "г"}, {"ingridient_name": "масло", "quantity": 10, "measure": "мл"}], "салат": [{"ingridient_name": "помидоры", "quantity": 100, "measure": "г"}, {"ingridient_name": "огурцы", "quantity": 100, "measure": "г"}, {"ingridient_name": "масло", "quantity": 100, "measure": "мл"}, {"ingridient_name": "лук", "quantity": 1, "measure": "шт"}]}
+{
+  "омлет": [
+    {
+      "ingridient_name": "€йца",
+      "quantity": 2,
+      "measure": "шт"
+    },
+    {
+      "ingridient_name": "молоко",
+      "quantity": 50,
+      "measure": "г"
+    },
+    {
+      "ingridient_name": "помидор",
+      "quantity": 100,
+      "measure": "мл"
+    }
+  ],
+  "€ичница": [
+    {
+      "ingridient_name": "€йца",
+      "quantity": 2,
+      "measure": "шт"
+    },
+    {
+      "ingridient_name": "помидоры",
+      "quantity": 100,
+      "measure": "г"
+    }
+  ],
+  "стейк": [
+    {
+      "ingridient_name": "гов€дина",
+      "quantity": 300,
+      "measure": "г"
+    },
+    {
+      "ingridient_name": "специи",
+      "quantity": 5,
+      "measure": "г"
+    },
+    {
+      "ingridient_name": "масло",
+      "quantity": 10,
+      "measure": "мл"
+    }
+  ],
+  "салат": [
+    {
+      "ingridient_name": "помидоры",
+      "quantity": 100,
+      "measure": "г"
+    },
+    {
+      "ingridient_name": "огурцы",
+      "quantity": 100,
+      "measure": "г"
+    },
+    {
+      "ingridient_name": "масло",
+      "quantity": 100,
+      "measure": "мл"
+    },
+    {
+      "ingridient_name": "лук",
+      "quantity": 1,
+      "measure": "шт"
+    }
+  ]
+}
