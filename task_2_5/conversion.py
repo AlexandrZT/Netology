@@ -20,7 +20,7 @@ def convert_worker(binary, image_name, dst_folder):
     print(binary, image_name, dst_folder)
 
 def convert_images(converter, dst_file):
-    #thread_count = input('Запустить 1 поток(s) или 4ре(m)?:')
+    thread_count = input('Запустить 1 поток(s) или 4ре(m)?:')
     folder_name = 'Source'
     convert_files = locate_files(folder_name)
     thread_count = '4'
@@ -28,7 +28,7 @@ def convert_images(converter, dst_file):
     if thread_count.lower() == 's':
         for img in convert_files:
             convert(converter, convert_files[0], dst_file)
-    elif:
+    elif thread_count.lower() == 'm':
         wprocess = []
         for pnom in range(int(thread_count)):
             mproc = multiprocessing.Process(target=convert, args=(converter, convert_files[pnom], dst_file))
