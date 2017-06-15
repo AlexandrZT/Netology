@@ -8,9 +8,9 @@ FRIENDS_URL = 'friends.get'
 USER_GET = 'users.get'
 APP_ID = 6075011
 API_VER = '5.65'
-protected_key = 'nzmUDcHfAyYnWB1u825z'
-service_key = '11768c2f11768c2f11768c2f76112a3eac1117611768c2f4834af6e23345cdfb3724b73'
-access_token = '331d3d9e33c7ed42da86fb76b6419b23f00df1c783b8ad9731c4ce893750d950c842ce5bec7293620eaa5'
+protected_key = <SKIP>
+service_key = <SKIP>
+access_token = <SKIP>
 
 
 def print_auth_request():
@@ -78,5 +78,5 @@ def get_common_frineds_list_graph():
     for friend in graph:
         print('{}-{}'.format(friend, graph[friend]))
 
-# get_common_frineds_list()
-get_common_frineds_list_graph()
+get_common_frineds_list()
+# get_common_frineds_list_graph()
