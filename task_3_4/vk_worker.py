@@ -61,9 +61,12 @@ def get_common_frineds_list_graph():
                         'v': API_VER
     }
     graph = {}
+    vk_response = requests.get('/'.join([BASE_URL, USER_GET]), request_parametrs)
+    my_id = vk_response.json()['response'][0]['id']
     vk_response = requests.get('/'.join([BASE_URL, FRIENDS_URL]), request_parametrs)
     friends_count = vk_response.json()['response']['count']
     friends_list = vk_response.json()['response']['items']
+    graph[my_id] = friends_list
     print('Получено друзей :', friends_count)
     for friend in friends_list:
         request_parametrs['user_id'] = friend
@@ -75,5 +78,5 @@ def get_common_frineds_list_graph():
     for friend in graph:
         print('{}-{}'.format(friend, graph[friend]))
 
-get_common_frineds_list()
-# get_common_frineds_list_graph()
+# get_common_frineds_list()
+get_common_frineds_list_graph()
