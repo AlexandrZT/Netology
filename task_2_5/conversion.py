@@ -28,7 +28,7 @@ def convert_images(converter, dst_file):
     prepare_folder(dst_file)
     if thread_count.lower() in ['s', '1']:
         for img in convert_files:
-            convert(converter, convert_files[0], dst_file)
+            convert(converter, img, dst_file)
     elif thread_count.lower() in ['m', '4']:
         thread_count = '4'
         wprocess = []
