@@ -50,6 +50,6 @@ def load_task3(file_name):
         print('Полная длинна маршрута: {:.2f}\u00B0C'.format(trip_distance))
 
 if __name__ == '__main__':
-    # load_task1('temps.txt')
-    # load_task2('currencies.txt')
+    load_task1('temps.txt')
+    load_task2('currencies.txt')
     load_task3('travel.txt')
