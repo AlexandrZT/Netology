@@ -44,10 +44,10 @@ def load_task3(file_name):
                 line_components = file_line.split(' ')
                 mesure = line_components[2].strip()
                 read_amount = line_components[1]
-                srv_response = sclient.service.ConvertToNum(fromCurrency=currency, toCurrency='RUB',
-                                                            amount=read_amount, rounding=True)
+                srv_response = sclient.service.ChangeLengthUnit(LengthValue=read_amount, fromLengthUnit=mesure,
+                                                                toLengthUnit='Kilometers')
                 trip_distance += float(srv_response)
-        print('Полная длинна маршрута: {:.2f}\u00B0C'.format(srv_response))
+        print('Полная длинна маршрута: {:.2f}\u00B0C'.format(trip_distance))
 
 if __name__ == '__main__':
     # load_task1('temps.txt')
