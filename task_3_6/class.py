@@ -38,7 +38,7 @@ class Hens(Animal):
     grow_factor = 0.25
 
     def say_something(self):
-           super().say_something('Ko, ko!')  # Easy way
+        super().say_something('Ko, ko!')  # Easy way
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -49,9 +49,11 @@ class Hens(Animal):
         else:
             self.weight += self.grow_factor
 
+
 class Ducks(Animal):
     favotite_meal = ['wheat', 'insects', 'leech']
     grow_factor = 0.25
+
     def say_something(self):
         if self.alive:              # Hard way
             print('Quack, quack!')  #
@@ -71,7 +73,7 @@ class Geese(Animal):
     grow_factor = 0.15
 
     def say_something(self):
-            print('Eeeeg, Eeeg!')
+        super().say_something('Eeeeg, Eeeg!')
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -89,7 +91,7 @@ class Cows(Animal):
 
     def say_something(self):
         if self.alive:
-            print('Muuu, Muuu!')
+            super().say_something('Muuu, Muuu!')
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -107,7 +109,7 @@ class Goats(Animal):
 
     def say_something(self):
         if self.alive:
-            print('Meee, Meee!')
+            super().say_something('Meee, Meee!')
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -117,6 +119,7 @@ class Goats(Animal):
             self.weight += self.grow_factor * 2
         else:
             self.weight += self.grow_factor
+
 
 class Sheeps(Animal):
     favotite_meal = ['grass', 'leaf', 'bread']
@@ -124,7 +127,7 @@ class Sheeps(Animal):
 
     def say_something(self):
         if self.alive:
-            print('Beee, Beee!')
+            super().say_something('Beee, Beee!')
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -134,6 +137,7 @@ class Sheeps(Animal):
             self.weight += self.grow_factor * 2
         else:
             self.weight += self.grow_factor
+
 
 class Pigs(Animal):
     favotite_meal = ['wheat', 'bread', 'beet']
@@ -141,7 +145,7 @@ class Pigs(Animal):
 
     def say_something(self):
         if self.alive:
-            print('Oink, Oink!')
+            super().say_something('Oink, Oink!')
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -153,7 +157,8 @@ class Pigs(Animal):
             self.weight += self.grow_factor
 
 
-avaliable_food = ['insects', 'wheat', 'worm', 'beet', 'bread', 'apple', 'leech', 'grass', 'leaf', 'phosphoryl chloride', 'aziridine', 'mercury', 'arsine']
+avaliable_food = ['insects', 'wheat', 'worm', 'beet', 'bread', 'apple', 'leech', 'grass', 'leaf', 'phosphoryl chloride',
+                  'aziridine', 'mercury', 'arsine']
 print('Let survaival begins!')
 random.seed()
 my_little_zoo = []
@@ -181,7 +186,7 @@ my_little_zoo.append(animal_pig)
 for animal in my_little_zoo:
     animal.born_me()
     print('{} was born'.format(animal.name))
-rounds = 10
+rounds = 3
 continue_it = True
 while continue_it:
     print('Round {} begins'.format(rounds))
@@ -196,4 +201,4 @@ while continue_it:
 print('Our champions!')
 for animal in my_little_zoo:
     if animal.existance():
-        print('{} is survived!'.format(animal.name))
+        print('{} is survived! His weight is {:.1f} kg'.format(animal.name, animal.weight))
