@@ -9,6 +9,7 @@ class Animal:
     weight = 0
     name = ''
     grow_factor = 0
+    my_words = ''
 
     def born_me(self):
         self.alive = True
@@ -21,9 +22,9 @@ class Animal:
     def existance(self):
         return self.alive
 
-    def say_something(self, msg):
+    def say_something(self):
         if self.alive:
-            print(msg)
+            print(self.my_words)
             return True
         else:
             return False
@@ -36,9 +37,7 @@ class Animal:
 class Hens(Animal):
     favotite_meal = ['wheat', 'worm', 'insects']
     grow_factor = 0.25
-
-    def say_something(self):
-        super().say_something('Ko, ko!')  # Easy way
+    my_words = 'Ko, ko!'
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -53,6 +52,7 @@ class Hens(Animal):
 class Ducks(Animal):
     favotite_meal = ['wheat', 'insects', 'leech']
     grow_factor = 0.25
+    my_words = 'Quack, quack!'
 
     def say_something(self):
         if self.alive:              # Hard way
@@ -71,9 +71,7 @@ class Ducks(Animal):
 class Geese(Animal):
     favotite_meal = ['wheat', 'insects', 'leech']
     grow_factor = 0.15
-
-    def say_something(self):
-        super().say_something('Eeeeg, Eeeg!')
+    my_words = 'Eeeeg, Eeeg!'
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -88,10 +86,7 @@ class Geese(Animal):
 class Cows(Animal):
     favotite_meal = ['wheat', 'grass', 'apple']
     grow_factor = 4
-
-    def say_something(self):
-        if self.alive:
-            super().say_something('Muuu, Muuu!')
+    my_words = 'Muuu, Muuu!'
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -106,10 +101,7 @@ class Cows(Animal):
 class Goats(Animal):
     favotite_meal = ['grass', 'beet', 'apple']
     grow_factor = 2
-
-    def say_something(self):
-        if self.alive:
-            super().say_something('Meee, Meee!')
+    my_words = 'Meee, Meee!'
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -124,10 +116,7 @@ class Goats(Animal):
 class Sheeps(Animal):
     favotite_meal = ['grass', 'leaf', 'bread']
     grow_factor = 2.5
-
-    def say_something(self):
-        if self.alive:
-            super().say_something('Beee, Beee!')
+    my_words = 'Beee, Beee!'
 
     def test_it(self, what):
         if what in self.toxic_substances:
@@ -142,10 +131,7 @@ class Sheeps(Animal):
 class Pigs(Animal):
     favotite_meal = ['wheat', 'bread', 'beet']
     grow_factor = 1.5
-
-    def say_something(self):
-        if self.alive:
-            super().say_something('Oink, Oink!')
+    my_words = 'Oink, Oink!'
 
     def test_it(self, what):
         if what in self.toxic_substances:
