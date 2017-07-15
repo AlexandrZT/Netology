@@ -57,7 +57,7 @@ class YaCounters(YaBase):
         response = requests.get(self.COUNTERS_STAT_URL, params=req_params, headers=req_headers)
         return response.json()['totals'][0]
 
-yam = YaCounters('ID', 'TOKEN')
+yam = YaCounters('15f97de7c4634b5cbb631b2526c94d6d','AQAEA7qiCuVUAARjYRmhBAVWF0lwo7t3ef1pufo')
 yam_cntrs = yam.get_counter_id()
 yam_number = yam.get_visitors()
 print(yam_number)
