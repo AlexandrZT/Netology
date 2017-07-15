@@ -51,7 +51,6 @@ class LinkedList:
     def reverse(self) -> None:
         cntr = 0
         if self.head is None:
-            print('Empty List')
             return True
         element = self.head
         prev_elem = self.head
@@ -59,14 +58,10 @@ class LinkedList:
         new_prev_element = None
         while element:
             if element.next is None:
-                print('Next element is  None! Addr {}, Value: {}'.format(element, element.data))
                 if new_head:
                     new_prev_element.link(element)
                     prev_elem.link(None)
                     new_prev_element = element
-                    print('BL Prev elem:{}, {}. Value: {}'.format(prev_elem, prev_elem.next, prev_elem.data))
-                    print('BL Work elem:{}, {}. Value: {}'.format(element, element.next, element.data))
-                    print('BL New List {}, {} Value: {}'.format(new_prev_element, new_prev_element.next, new_prev_element.data))
                     if cntr > 10:
                         element= None
                         continue
@@ -81,9 +76,6 @@ class LinkedList:
                     new_prev_element = new_head
                     prev_elem.link(None)
                     element = self.head
-                    print('Prev elem:{}, {}. Value: {}'.format(prev_elem, prev_elem.next, prev_elem.data))
-                    print('Work elem:{}, {}. Value: {}'.format(element, element.next, element.data))
-                    print('New List {}, {}. Value: {}'.format(new_head, new_head.next, new_head.data))
                     if prev_elem == self.head:
                         new_prev_element.link(prev_elem)
                         element = None
@@ -97,10 +89,8 @@ class LinkedList:
             element = element.next
             if cntr > 10:
                 element = None
-            print('Main cycle:{}, {}. Value:{}'.format(prev_elem, prev_elem.next, prev_elem.data))
             cntr += 1
         self.head = new_head
-        print('Done')
         return True
 
         # for value in values:
