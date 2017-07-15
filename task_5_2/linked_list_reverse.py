@@ -46,9 +46,53 @@ class LinkedList:
         while current:
             yield current.data
             current = current.next
+            print(current)
 
     def reverse(self) -> None:
-        raise NotImplementedError
+        reversed_llist = []
+        element = self.head
+        prev_elem = self.head
+        new_head = None
+        new_prev_element = None
+        while element:
+            if element.next is None:
+                print('Next element is  None! Addr {}, Value: {}'.format(element, element.data))
+                if new_head:
+                    new_prev_element.link(element)
+                    prev_elem.link(None)
+                    new_prev_element = element
+                    print('BL Prev elem:{}, {}. Value: {}'.format(prev_elem, prev_elem.next, prev_elem.data))
+                    print('BL Work elem:{}, {}. Value: {}'.format(element, element.next, element.data))
+                    print('BL New List {}, {} Value: {}'.format(new_prev_element, new_prev_element.next, new_prev_element.data))
+                    if prev_elem == self.head:
+                        new_prev_element.link(prev_elem)
+                        element = None
+                    else:
+                        element = self.head
+                    continue
+                else:
+                    new_head = element
+                    prev_elem.link(None)
+                    new_prev_element = new_head
+                    element = self.head
+                    print('Prev elem:{}, {}. Value: {}'.format(prev_elem, prev_elem.next, prev_elem.data))
+                    print('Work elem:{}, {}. Value: {}'.format(element, element.next, element.data))
+                    print('New List {}, {}. Value: {}'.format(new_head, new_head.next, new_head.data))
+
+                    continue
+            prev_elem = element
+            element = element.next
+            print('Main cycle:{}, {}. Value:{}'.format(prev_elem, prev_elem.next, prev_elem.data))
+        self.head = new_head
+        print('Done')
+        return reversed_llist
+
+        # for value in values:
+        #     current = LinkedListNode(value)
+        #     if previous:
+        #         previous.link(current)
+        #     self.head = self.head or current
+        #     previous = current
 
 
 class LinkedListTestCase(unittest.TestCase):
@@ -82,3 +126,8 @@ class LinkedListTestCase(unittest.TestCase):
                 )
 
 asf = LinkedList([1, 2, 3, 4, 5])
+
+asf.reverse()
+# m.iter()
+for num in asf:
+    print(num)
