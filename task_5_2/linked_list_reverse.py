@@ -51,7 +51,7 @@ class LinkedList:
     def reverse(self) -> None:
         cntr = 0
         if self.head is None:
-            return True
+            return None
         element = self.head
         prev_elem = self.head
         new_head = None
@@ -63,7 +63,7 @@ class LinkedList:
                     prev_elem.link(None)
                     new_prev_element = element
                     if cntr > 10:
-                        element= None
+                        element = None
                         continue
                     if prev_elem == self.head:
                         new_prev_element.link(prev_elem)
@@ -91,7 +91,7 @@ class LinkedList:
                 element = None
             cntr += 1
         self.head = new_head
-        return True
+        return None
 
         # for value in values:
         #     current = LinkedListNode(value)
