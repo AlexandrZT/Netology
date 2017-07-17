@@ -49,7 +49,6 @@ class LinkedList:
             print(current)
 
     def reverse(self) -> None:
-        cntr = 0
         if self.head is None:
             return None
         element = self.head
@@ -62,9 +61,6 @@ class LinkedList:
                     new_prev_element.link(element)
                     prev_elem.link(None)
                     new_prev_element = element
-                    if cntr > 10:
-                        element = None
-                        continue
                     if prev_elem == self.head:
                         new_prev_element.link(prev_elem)
                         element = None
@@ -87,9 +83,6 @@ class LinkedList:
 
             prev_elem = element
             element = element.next
-            if cntr > 10:
-                element = None
-            cntr += 1
         self.head = new_head
         return None
 
@@ -131,7 +124,7 @@ class LinkedListTestCase(unittest.TestCase):
                     list(linked_list),
                 )
 
-asf = LinkedList([1])
+asf = LinkedList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
 asf.reverse()
 # m.iter()
