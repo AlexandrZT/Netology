@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import requests
 from urllib.parse import urlencode
 import time
@@ -18,6 +19,7 @@ def get_friend_list(user_id, access_token):
                         'client_id': user_id,
                         'access_token': access_token,
                         'v': API_VER
+                        # 'count': 3
     }
     timeout = DEF_TIME_OUT
     continue_request = True
@@ -36,7 +38,7 @@ def get_friend_list(user_id, access_token):
 
 def get_user_groups(user_id, access_token):
     request_parametrs = {
-                        'client_id': user_id,
+                        'user_id': user_id,
                         'access_token': access_token,
                         'v': API_VER
     }
@@ -45,15 +47,54 @@ def get_user_groups(user_id, access_token):
     while continue_request:
         try:
             vk_response = requests.get('/'.join([BASE_URL, GROUPS_GET]), request_parametrs)
-            print(vk_response.json())
-            in_groups = vk_response.json()['response']['items']
-        except:
+            # print('User id is: {}. Group status code:{}, response is {}'.format(user_id, vk_response.status_code, vk_response.json()))
+            if 'error' in vk_response.json():
+                if vk_response.json()['error']['error_code'] == 18:
+                    continue_request = False
+                    in_groups = set([-1,])
+                    continue
+                elif vk_response.json()['error']['error_code'] == 6:
+                    time.sleep(timeout)
+                    timeout *= 1.1
+                    continue
+            in_groups = set(vk_response.json()['response']['items'])
+        except Exception as e:
+            print(e, vk_response.status_code)
+            print('User id is: {}. Group status code:{}, response is {}'.format(user_id, vk_response.status_code,
+                                                                                vk_response.json()))
             time.sleep(timeout)
             timeout *= 1.1
             continue
         continue_request = False
     return in_groups
 
-# friends_list = get_friend_list(5030613, VK_TOKEN, wrk_time_out)
-# friends_list = get_friend_list(5030613, VK_TOKEN)
-id_groups = get_user_groups(5030613, VK_TOKEN)
+
+def return_uniq_groups(user_id, access_token, group_tolerance):
+    friends_list = get_friend_list(user_id, access_token)
+    friends_count = len(friends_list)
+    friends_cntr = 0
+    group_tolerance_cntr = 0
+    print('Got user with {} friends'.format(friends_count))
+    user_groups = get_user_groups(user_id, access_token)
+    friends_groups = {}
+    for friend in friends_list:
+        print(friend)
+        friends_groups[friend] = get_user_groups(friend, access_token)
+        friends_cntr += 1
+        os.system('cls')
+        print('Current friend is {} from {}'.format(friends_cntr, friends_count))
+    for group in user_groups:
+        for friend_id in friends_groups:
+            print(group, friends_groups[friend_id])
+            if group in friends_groups[friend_id]:
+                print('Group id {} is in friend id: {} groups'.format(group, friend_id))
+                group_tolerance_cntr += 1
+                if group_tolerance_cntr > group_tolerance:
+                    print('Group id {} excluded'.format(group))
+                    break
+        print('Group id {} is uniq'.format(group))
+
+    return friends_groups
+
+
+groups = return_uniq_groups(5030613, VK_TOKEN, 0)
