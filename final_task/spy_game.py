@@ -7,7 +7,7 @@ import time
 import test_data
 
 
-VK_TOKEN = 'e41abeaf1ce85912e620a9a86ace26224737eaa40c78547478825d25dce0e77d2d9c297f16a66385b7064'
+VK_TOKEN = <SKIP>'
 
 
 def clear_screen():
