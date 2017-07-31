@@ -40,7 +40,7 @@ class VkUniqGroupFinder:
             self.get_user_id_by_name(user_name)
         else:
             self.user_id = user_id
-        print('Init done.',self.user_id, self.access_token)
+        print('Init done.', self.user_id, self.access_token)
 
     def get_user_id_by_name(self, user_name):
         request_parametrs = {
@@ -141,9 +141,9 @@ class VkUniqGroupFinder:
                 print('Group id {} is uniq, length:{}'.format(group, len(uniq_groups)))
         self.user_uniq_groups = uniq_groups
 
-    def get_groups_info(self, selected_groups):
+    def get_groups_info(self):
         request_parametrs = {
-            'group_ids': selected_groups,
+            'group_ids': self.user_uniq_groups,
             'fields': 'name,members_count',
             'v': self.API_VER
         }
@@ -184,6 +184,7 @@ class VkUniqGroupFinder:
     def write_groups_result(self):
         with open(self.output_file, 'w') as wfile:
             json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True, indent=4, ensure_ascii=False)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.', add_help=True)
