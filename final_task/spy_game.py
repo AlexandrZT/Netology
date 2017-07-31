@@ -4,10 +4,9 @@ import json
 import os
 import requests
 import time
-import test_data
 
 
-VK_TOKEN = <SKIP>'
+VK_TOKEN = '<SKIP>'
 
 
 def clear_screen():
