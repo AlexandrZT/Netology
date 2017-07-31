@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import argparse
+import json
 import os
 import requests
 import time
 import test_data
 
 
-VK_TOKEN = <SKIP>
+VK_TOKEN = 'e41abeaf1ce85912e620a9a86ace26224737eaa40c78547478825d25dce0e77d2d9c297f16a66385b7064'
 
 
 def clear_screen():
@@ -28,6 +29,8 @@ class VkUniqGroupFinder:
     access_token = ''
     group_tolerance = 0
     output_file = ''
+    groups_info_result = []
+    user_uniq_groups = {}
 
     def __init__(self, auth_token, user_id=None, user_name=None, group_tolerance=0, out_file='outGroups.json'):
         self.group_tolerance = group_tolerance
@@ -103,7 +106,7 @@ class VkUniqGroupFinder:
             continue_request = False
         return in_groups
 
-    def return_uniq_groups(self):
+    def prepare_uniq_groups(self):
         friends_list = self.get_friend_list()
         friends_count = len(friends_list)
         uniq_groups = set()
@@ -136,7 +139,7 @@ class VkUniqGroupFinder:
             if include_group:
                 uniq_groups.add(group)
                 print('Group id {} is uniq, length:{}'.format(group, len(uniq_groups)))
-        return uniq_groups
+        self.user_uniq_groups = uniq_groups
 
     def get_groups_info(self, selected_groups):
         request_parametrs = {
@@ -176,11 +179,11 @@ class VkUniqGroupFinder:
                 timeout *= 1.1
                 continue
             continue_request = False
-        return groups_info
+        self.groups_info_result = groups_info
 
-    def write_groups_result(self, file_to_write):
-        pass
-
+    def write_groups_result(self):
+        with open(self.output_file, 'w') as wfile:
+            json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True, indent=4, ensure_ascii=False)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.', add_help=True)
@@ -196,13 +199,10 @@ def parse_arguments():
 if __name__ == '__main__':
     start_arguments = parse_arguments()
     print(start_arguments)
-    # if start_arguments['i'] is None:
-    #     uniq_group = VkUniqGroupFinder(VK_TOKEN, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
-    # else:
-    #     uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
-
-uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=5030613)
-aaa = uniq_group.return_uniq_groups()
-print(aaa)
-info = uniq_group.get_groups_info(aaa)
-print(info)
+    if start_arguments['i'] is None:
+        uniq_group = VkUniqGroupFinder(VK_TOKEN, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
+    else:
+        uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
+    uniq_group.prepare_uniq_groups()
+    uniq_group.get_groups_info()
+    uniq_group.write_groups_result()
