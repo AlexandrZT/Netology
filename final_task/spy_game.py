@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import argparse
 import os
 import requests
-from urllib.parse import urlencode
 import time
 import test_data
+
+
+VK_TOKEN = <SKIP>
 
 
 def clear_screen():
@@ -19,24 +22,31 @@ class VkUniqGroupFinder:
     GROUPS_GET = 'groups.get'
     GROUPS_INFO = 'groups.getById'
     USER_GET = 'users.get'
-    APP_ID = 6075011
     API_VER = '5.67'
     DEF_TIME_OUT = 0.5
-    VK_TOKEN = 'd13e692be69592b09fd22c77a590dd34e186e6d696daa88d6d981e1b4e296b14acb377e82dcbc81dc0f22'
     user_id = ''
     access_token = ''
     group_tolerance = 0
+    output_file = ''
 
-    def __init__(self, auth_token, user_id=None, user_name=None, group_tolerance=0):
+    def __init__(self, auth_token, user_id=None, user_name=None, group_tolerance=0, out_file='outGroups.json'):
         self.group_tolerance = group_tolerance
         self.access_token = auth_token
+        self.output_file = out_file
         if user_id is None:
-            self.user_id = self.get_user_id_by_name(user_name)
+            self.get_user_id_by_name(user_name)
         else:
             self.user_id = user_id
+        print('Init done.',self.user_id, self.access_token)
 
     def get_user_id_by_name(self, user_name):
-        pass
+        request_parametrs = {
+            'user_ids': user_name,
+            'access_token': self.access_token,
+            'v': self.API_VER
+        }
+        vk_response = requests.get('/'.join([self.BASE_URL, self.USER_GET]), request_parametrs)
+        self.user_id = vk_response.json()['response'][0]['id']
 
     def get_friend_list(self):
         request_parametrs = {
@@ -68,13 +78,13 @@ class VkUniqGroupFinder:
         }
         timeout = self.DEF_TIME_OUT
         continue_request = True
+        in_groups = {-1}
         while continue_request:
             try:
                 vk_response = requests.get('/'.join([self.BASE_URL, self.GROUPS_GET]), request_parametrs)
                 if 'error' in vk_response.json():
                     if vk_response.json()['error']['error_code'] == 18:
                         continue_request = False
-                        in_groups = set([-1, ])
                         continue
                     elif vk_response.json()['error']['error_code'] == 6:
                         time.sleep(timeout)
@@ -84,6 +94,9 @@ class VkUniqGroupFinder:
             except Exception as e:
                 print('Wired. \n Error: {} \n User id is: {}. Group status code:{}, response is {}'.format(
                     e, self.user_id, vk_response.status_code, vk_response.json()))
+                if vk_response.json()['error']['error_code'] == 5:
+                    print('Authentification error.')
+                    return False
                 time.sleep(timeout)
                 timeout *= 1.1
                 continue
@@ -99,7 +112,6 @@ class VkUniqGroupFinder:
         print('Got user with {} friends'.format(friends_count))
         # user_groups = get_user_groups(user_id, access_token)
         user_groups = test_data.tdatas_user_2
-        print(user_groups)
         friends_groups = {}
         # for friend in friends_list:
         #     print(friend)
@@ -129,16 +141,68 @@ class VkUniqGroupFinder:
     def get_groups_info(self, selected_groups):
         request_parametrs = {
             'group_ids': selected_groups,
-            'fields': 'name,description, members_count',
+            'fields': 'name,members_count',
             'v': self.API_VER
         }
-        vk_response = requests.get('/'.join([self.BASE_URL, self.GROUPS_INFO]), request_parametrs)
+        timeout = self.DEF_TIME_OUT
+        continue_request = True
+        groups_info = []
+        while continue_request:
+            try:
+                vk_response = requests.get('/'.join([self.BASE_URL, self.GROUPS_INFO]), request_parametrs)
+                print(vk_response.json())
+                if 'error' in vk_response.json():
+                    if vk_response.json()['error']['error_code'] == 18:
+                        continue_request = False
+                        continue
+                    elif vk_response.json()['error']['error_code'] == 6:
+                        time.sleep(timeout)
+                        timeout *= 1.1
+                        continue
+                    elif vk_response.json()['error']['error_code'] == 5:
+                        print('Authentification error.')
+                        return False
+                returned_groups = vk_response.json()['response']
+                group_info = {}
+                for group in returned_groups:
+                    group_info['name'] = group['name']
+                    group_info['gid'] = group['id']
+                    group_info['members_count'] = group['members_count']
+                    groups_info.append(group_info)
+            except Exception as e:
+                print('Wired. \n Error: {} \n User id is: {}. Group status code:{}, response is {}'.format(
+                    e, self.user_id, vk_response.status_code, vk_response.json()))
+                time.sleep(timeout)
+                timeout *= 1.1
+                continue
+            continue_request = False
+        return groups_info
 
     def write_groups_result(self, file_to_write):
         pass
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.', add_help=True)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-i', action='store', help='user id')
+    group.add_argument('-u', action='store', help='user name')
+    # parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
+    # parser.add_argument('-a', dest='user_name', action='store', required=False, help='Auth Token')
+    parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='OutputFile')
+    args = parser.parse_args()
+    return vars(args)
 
+if __name__ == '__main__':
+    start_arguments = parse_arguments()
+    print(start_arguments)
+    # if start_arguments['i'] is None:
+    #     uniq_group = VkUniqGroupFinder(VK_TOKEN, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
+    # else:
+    #     uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
 
-groups = return_uniq_groups(5030613, VK_TOKEN, 1)
-print(groups)
+uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=5030613)
+aaa = uniq_group.return_uniq_groups()
+print(aaa)
+info = uniq_group.get_groups_info(aaa)
+print(info)

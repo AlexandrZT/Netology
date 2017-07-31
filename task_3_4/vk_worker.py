@@ -7,10 +7,10 @@ BASE_URL = 'https://api.vk.com/method'
 FRIENDS_URL = 'friends.get'
 USER_GET = 'users.get'
 APP_ID = 6075011
-API_VER = '5.65'
-protected_key = <SKIP>
-service_key = <SKIP>
-access_token = <SKIP>
+API_VER = '5.67'
+protected_key = '<SKIP>'
+service_key = '<SKIP>'
+access_token = '<SKIP>'
 
 
 def print_auth_request():
@@ -78,5 +78,6 @@ def get_common_frineds_list_graph():
     for friend in graph:
         print('{}-{}'.format(friend, graph[friend]))
 
-get_common_frineds_list()
+#get_common_frineds_list()
 # get_common_frineds_list_graph()
+print_auth_request()
