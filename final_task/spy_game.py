@@ -8,14 +8,12 @@ WARNING! VK Key currently is static and should be entered with command line argu
 usage:
 
    >>> import requests
-   >>> r = requests.get('https://www.python.org')
-   >>> r.status_code
-   200
-   >>> 'Python is a programming language' in r.content
-   True
+   >>> ugroups = VkUniqGroupFinder(VK_TOKEN, user_name, out_file)
+   >>> ugroups.run()
 
-... or POST:
-
+VK_TOKEN  - uniq access token from Vk API
+user_name - Vk UserName or User ID
+out_file  - file to write unig groups and some group info
 
 :copyright: (c) 2017 by Alexandr Zaburdyayev.
 :license: Apache 2.0, see LICENSE for more details.
@@ -171,6 +169,11 @@ class VkUniqGroupFinder(VkAPIRequest):
         with open(self.output_file, 'w') as wfile:
             json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True, indent=4, ensure_ascii=False)
 
+    def run(self):
+        self.prepare_uniq_groups()
+        self.get_groups_info()
+        self.write_groups_result()
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.', add_help=True)
@@ -189,6 +192,4 @@ if __name__ == '__main__':
         uniq_group = VkUniqGroupFinder(VK_TOKEN, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
     else:
         uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
-    uniq_group.prepare_uniq_groups()
-    uniq_group.get_groups_info()
-    uniq_group.write_groups_result()
+    uniq_group.run()
