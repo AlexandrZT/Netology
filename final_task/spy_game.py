@@ -35,7 +35,12 @@ def clear_screen():
         os.system("clear")
 
 
-class VkAPIRequest:
+class VkUniqGroupFinder():
+    user_id = ''
+    group_tolerance = 0
+    output_file = ''
+    groups_info_result = []
+    user_uniq_groups = {}
     BASE_URL = 'https://api.vk.com/method'
     FRIENDS_GET = 'friends.get'
     GROUPS_GET = 'groups.get'
@@ -44,60 +49,58 @@ class VkAPIRequest:
     API_VER = '5.67'
     DEF_TIME_OUT = 0.5
     access_token = ''
+    auth_fail = False
     def_request_parametrs = {
-        'access_token': access_token,
+        'access_token': '',
         'v': API_VER
     }
 
-    def set_auth_token(self, auth_token):
+    def __init__(self, auth_token, user_id=None, user_name=None, group_tolerance=0, out_file='outGroups.json'):
+        self.group_tolerance = group_tolerance
         self.access_token = auth_token
+        self.def_request_parametrs['access_token'] = auth_token
+        self.output_file = out_file
+        if user_id is None:
+            self.get_user_id_by_name(user_name)
+        else:
+            self.user_id = user_id
 
     def prepare_parametrs(self, request_params):
         return {**self.def_request_parametrs, **request_params}
 
     def do_api_request(self, req_url, req_api_params):
+        if self.auth_fail:
+            return None
         timeout = self.DEF_TIME_OUT
         continue_request = True
-        api_return = ''
+        api_return = None
         while continue_request:
             try:
-                vk_response = requests.get(req_url, self.prepare_parametrs(req_api_params))
-                if 'error' in vk_response.json():
-                    if vk_response.json()['error']['error_code'] == 18:
+                vk_response = requests.get(req_url, self.prepare_parametrs(req_api_params)).json()
+                if 'error' in vk_response:
+                    if vk_response['error']['error_code'] == 18:     # Page deleted or blocked
                         continue_request = False
                         continue
-                    elif vk_response.json()['error']['error_code'] == 6:
+                    elif vk_response['error']['error_code'] == 6:    # Too much requests
                         time.sleep(timeout)
                         timeout *= 1.1
                         continue
-                    elif vk_response.json()['error']['error_code'] == 5:
-                        print('Authentification error. Exit')
+                    elif vk_response['error']['error_code'] == 7:    # Permission to perform this action is denied
+                        continue_request = False
                         continue
-                api_return = vk_response.json()
+                    elif vk_response['error']['error_code'] == 5 or \
+                            vk_response['error']['error_code'] == 28:  # Auth failed
+                        print('Authentification error. Code: {}.\nExit.'.format(vk_response['error']['error_code']))
+                        self.auth_fail = True
+                        continue_request = False
+                        continue
+                api_return = vk_response
             except Exception as e:
                 print('Wired. \n Error: {} \n Request parameters: {}. '
                       'Response status code: {},\n api response {}'.format(
                        e, req_api_params, vk_response.status_code, vk_response.json()))
             continue_request = False
         return api_return
-
-
-class VkUniqGroupFinder(VkAPIRequest):
-    user_id = ''
-    group_tolerance = 0
-    output_file = ''
-    groups_info_result = []
-    user_uniq_groups = {}
-
-    def __init__(self, auth_token, user_id=None, user_name=None, group_tolerance=0, out_file='outGroups.json'):
-        self.group_tolerance = group_tolerance
-        # self.access_token = auth_token
-        self.set_auth_token(auth_token)
-        self.output_file = out_file
-        if user_id is None:
-            self.get_user_id_by_name(user_name)
-        else:
-            self.user_id = user_id
 
     def get_user_id_by_name(self, user_name):
         request_parametrs = {
@@ -112,6 +115,8 @@ class VkUniqGroupFinder(VkAPIRequest):
             # 'count': 3    # DEBUG Limitter
         }
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.FRIENDS_GET]), request_parametrs)
+        if self.auth_fail:
+            return
         friends_list = vk_response['response']['items']
         return friends_list
 
@@ -120,8 +125,13 @@ class VkUniqGroupFinder(VkAPIRequest):
             'user_id': req_user,
             'count': 1000,
         }
+        if self.auth_fail:
+            return
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.GROUPS_GET]), request_parametrs)
-        in_groups = set(vk_response['response']['items'])
+        if vk_response is None:
+            in_groups = set({-1})
+        else:
+            in_groups = set(vk_response['response']['items'])
         return in_groups
 
     def get_groups_info(self):
@@ -129,6 +139,8 @@ class VkUniqGroupFinder(VkAPIRequest):
             'group_ids': self.user_uniq_groups,
             'fields': 'name,members_count',
         }
+        if self.auth_fail:
+            return
         groups_info = []
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.GROUPS_INFO]), request_parametrs)
         returned_groups = vk_response['response']
@@ -142,6 +154,8 @@ class VkUniqGroupFinder(VkAPIRequest):
 
     def prepare_uniq_groups(self):
         friends_list = self.get_friend_list()
+        if self.auth_fail:
+            return
         friends_count = len(friends_list)
         uniq_groups = set()
         friends_cntr = 0
@@ -150,7 +164,7 @@ class VkUniqGroupFinder(VkAPIRequest):
         for friend in friends_list:
             friends_groups[friend] = self.get_user_groups(friend)
             friends_cntr += 1
-            print('Filling friends groups. Friend {} from {} groups'.format(friends_cntr, friends_count))
+            print('Filling friends groups. Friend {} from {} friends'.format(friends_cntr, friends_count))
             clear_screen()
         for group in user_groups:
             group_tolerance_cntr = 0

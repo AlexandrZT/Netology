@@ -17,7 +17,7 @@ def print_auth_request():
     req_api_params = {
             'client_id': APP_ID,
             'response_type': 'token',
-            'scope': 'notify, friends, status',
+            'scope': 'notify, friends, status, groups',
             'v': API_VER
     }
     print('?'.join([AUTH_URL, urlencode(req_api_params)]))
