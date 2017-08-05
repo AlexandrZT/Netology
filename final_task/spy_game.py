@@ -22,7 +22,7 @@ import json
 import os
 import requests
 import time
-
+import sys
 
 VK_TOKEN = '5dfd6b0dee902310df772082421968f4c06443abecbc082a8440cb18910a56daca73ac8d04b25154a1128'
 
@@ -190,19 +190,29 @@ class VkUniqGroupFinder:
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.', add_help=True)
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-i', action='store', help='user id')
-    group.add_argument('-u', action='store', help='user name')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-i', action='store', help='Vk user id')
+    group.add_argument('-u', action='store', help='Vk user name')
     # parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
     # parser.add_argument('-a', dest='user_name', action='store', required=False, help='Auth Token')
-    parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='OutputFile')
-    args = parser.parse_args()
+    parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='File to write results')
+    parser.add_argument('-a', dest='auth_data', action='store',
+                        help='Vk AuthToken. If not filled then default token is used.')
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    else:
+        args = parser.parse_args()
     return vars(args)
 
 if __name__ == '__main__':
     start_arguments = parse_arguments()
+    if start_arguments['auth_data'] is None:
+        auth_token = VK_TOKEN
+    else:
+        auth_token = start_arguments['auth_data']
     if start_arguments['i'] is None:
         uniq_group = VkUniqGroupFinder(VK_TOKEN, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
     else:
         uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
-    uniq_group.run()
+   # uniq_group.run()
