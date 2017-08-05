@@ -7,7 +7,6 @@ Spy game is project aimed to find out our differencies in interests between our 
 WARNING! VK Key currently is static and should be entered with command line argument
 usage:
 
-   >>> import requests
    >>> ugroups = VkUniqGroupFinder(VK_TOKEN, user_name, out_file)
    >>> ugroups.run()
 
@@ -35,7 +34,7 @@ def clear_screen():
         os.system("clear")
 
 
-class VkUniqGroupFinder():
+class VkUniqGroupFinder:
     user_id = ''
     group_tolerance = 0
     output_file = ''
@@ -129,7 +128,7 @@ class VkUniqGroupFinder():
             return
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.GROUPS_GET]), request_parametrs)
         if vk_response is None:
-            in_groups = set({-1})
+            in_groups = {-1}
         else:
             in_groups = set(vk_response['response']['items'])
         return in_groups
