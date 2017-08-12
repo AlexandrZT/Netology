@@ -160,6 +160,7 @@ class VkUniqGroupFinder:
         friends_cntr = 0
         user_groups = self.get_user_groups(self.user_id)
         friends_groups = {}
+        print('Groups Loaded. Loading friends groups...')
         for friend in friends_list:
             friends_groups[friend] = self.get_user_groups(friend)
             friends_cntr += 1
@@ -167,8 +168,8 @@ class VkUniqGroupFinder:
             clear_screen()
         for group in user_groups:
             group_tolerance_cntr = 0
+            include_group = True
             for friend_id in friends_groups:
-                include_group = True
                 if group in friends_groups[friend_id]:
                     group_tolerance_cntr += 1
                     if group_tolerance_cntr > self.group_tolerance:
@@ -208,11 +209,11 @@ def parse_arguments():
 if __name__ == '__main__':
     start_arguments = parse_arguments()
     if start_arguments['auth_data'] is None:
-        auth_token = VK_TOKEN
+        work_token = VK_TOKEN
     else:
-        auth_token = start_arguments['auth_data']
+        work_token = start_arguments['auth_data']
     if start_arguments['i'] is None:
-        uniq_group = VkUniqGroupFinder(VK_TOKEN, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
+        uniq_group = VkUniqGroupFinder(work_token, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
     else:
-        uniq_group = VkUniqGroupFinder(VK_TOKEN, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
-   # uniq_group.run()
+        uniq_group = VkUniqGroupFinder(work_token, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
+    uniq_group.run()
