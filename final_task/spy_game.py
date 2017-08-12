@@ -34,10 +34,31 @@ def clear_screen():
         os.system("clear")
 
 
+def printprogressbar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total:
+        print()
+
+
 class VkUniqGroupFinder:
-    user_id = ''
+    user_id = None
     group_tolerance = 0
-    output_file = ''
+    output_file = None
     groups_info_result = []
     user_uniq_groups = {}
     BASE_URL = 'https://api.vk.com/method'
@@ -108,9 +129,9 @@ class VkUniqGroupFinder:
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.USER_GET]), request_parametrs)
         self.user_id = vk_response['response'][0]['id']
 
-    def get_friend_list(self):
+    def get_friends_list(self, req_user_id):
         request_parametrs = {
-            'client_id': self.user_id,
+            'user_id': req_user_id,
             # 'count': 3    # DEBUG Limitter
         }
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.FRIENDS_GET]), request_parametrs)
@@ -135,7 +156,7 @@ class VkUniqGroupFinder:
 
     def get_groups_info(self):
         request_parametrs = {
-            'group_ids': self.user_uniq_groups,
+            'group_ids': str(self.user_uniq_groups).strip('{}'),
             'fields': 'name,members_count',
         }
         if self.auth_fail:
@@ -145,14 +166,14 @@ class VkUniqGroupFinder:
         returned_groups = vk_response['response']
         group_info = {}
         for group in returned_groups:
-            group_info['name'] = group['name']
-            group_info['gid'] = group['id']
-            group_info['members_count'] = group['members_count']
-            groups_info.append(group_info)
+            if 'deactivated' in group:
+                groups_info.append({'gid':group['id'],'name':group['name'], 'members_count':'BANNED'})
+            else:
+                groups_info.append({'gid':group['id'],'name':group['name'], 'members_count':group['members_count']})
         self.groups_info_result = groups_info
 
     def prepare_uniq_groups(self):
-        friends_list = self.get_friend_list()
+        friends_list = self.get_friends_list(self.user_id)
         if self.auth_fail:
             return
         friends_count = len(friends_list)
@@ -161,11 +182,13 @@ class VkUniqGroupFinder:
         user_groups = self.get_user_groups(self.user_id)
         friends_groups = {}
         print('Groups Loaded. Loading friends groups...')
+        printprogressbar(0, friends_count, prefix='Progress:', suffix='Complete', length=50)
         for friend in friends_list:
             friends_groups[friend] = self.get_user_groups(friend)
             friends_cntr += 1
-            print('Filling friends groups. Friend {} from {} friends'.format(friends_cntr, friends_count))
-            clear_screen()
+            printprogressbar(friends_cntr, friends_count, prefix='Progress:', suffix='Complete', length=50)
+            # print('Filling friends groups. Friend {} from {} friends'.format(friends_cntr, friends_count))
+            # clear_screen()
         for group in user_groups:
             group_tolerance_cntr = 0
             include_group = True
@@ -180,7 +203,7 @@ class VkUniqGroupFinder:
         self.user_uniq_groups = uniq_groups
 
     def write_groups_result(self):
-        with open(self.output_file, 'w') as wfile:
+        with open(self.output_file, 'w', encoding="utf-8") as wfile:
             json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True, indent=4, ensure_ascii=False)
 
     def run(self):
@@ -217,3 +240,4 @@ if __name__ == '__main__':
     else:
         uniq_group = VkUniqGroupFinder(work_token, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
     uniq_group.run()
+    print('All done. bb hf')
