@@ -231,7 +231,7 @@ def parse_arguments():
     parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
     parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='File to write results')
     parser.add_argument('-a', dest='auth_data', action='store', required=True,
-                        help='Vk AuthToken. If not filled then default token is used.')
+                        help='Vk AuthToken. Should be passed.')
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
