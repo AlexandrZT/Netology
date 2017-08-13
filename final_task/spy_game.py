@@ -87,7 +87,6 @@ class VkUniqGroupFinder:
     def check_token(self):
         self.do_api_request('/'.join([self.BASE_URL, self.PROFILE_INFO]), {})
 
-
     def prepare_parametrs(self, request_params):
         return {**self.def_request_parametrs, **request_params}
 
@@ -242,7 +241,7 @@ if __name__ == '__main__':
         uniq_group = VkUniqGroupFinder(start_arguments['auth_data'], user_id=start_arguments['i'],
                                        out_file=start_arguments['out_file'])
     if start_arguments['g_tolerance']:
-        if type(start_arguments['g_tolerance']) is int and start_arguments['g_tolerance'] >=0:
+        if type(start_arguments['g_tolerance']) is int and start_arguments['g_tolerance'] >= 0:
             uniq_group.group_tolerance = start_arguments['g_tolerance']
         else:
             print('Incorrect group tolerance, ignoring.')
