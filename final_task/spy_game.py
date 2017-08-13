@@ -230,8 +230,7 @@ def parse_arguments():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-i', action='store', help='Vk user id')
     group.add_argument('-u', action='store', help='Vk user name')
-    # parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
-    # parser.add_argument('-a', dest='user_name', action='store', required=False, help='Auth Token')
+    parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
     parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='File to write results')
     parser.add_argument('-a', dest='auth_data', action='store', required=True,
                         help='Vk AuthToken. If not filled then default token is used.')
@@ -250,6 +249,7 @@ if __name__ == '__main__':
     else:
         uniq_group = VkUniqGroupFinder(start_arguments['auth_data'], user_id=start_arguments['i'],
                                        out_file=start_arguments['out_file'])
-
+    if start_arguments['t']:
+        uniq_group.group_tolerance = start_arguments['g_tolerance']
     uniq_group.run()
     print('All done. bb hf')
