@@ -47,9 +47,9 @@ def printprogressbar(iteration, total, prefix='', suffix='', decimals=1, length=
         fill        - Optional  : bar fill character (Str)
     """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    filledlength = int(length * iteration // total)
+    bar = fill * filledlength + '-' * (length - filledlength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
     # Print New Line on Complete
     if iteration == total:
         print()
@@ -66,6 +66,7 @@ class VkUniqGroupFinder:
     GROUPS_GET = 'groups.get'
     GROUPS_INFO = 'groups.getById'
     USER_GET = 'users.get'
+    PROFILE_INFO = 'account.getProfileInfo'
     API_VER = '5.67'
     DEF_TIME_OUT = 0.5
     access_token = ''
@@ -84,6 +85,17 @@ class VkUniqGroupFinder:
             self.get_user_id_by_name(user_name)
         else:
             self.user_id = user_id
+        self.check_token()
+
+    def check_token(self,):
+        request_parametrs = {
+            'access_token': self.access_token,
+            'v': self.API_VER
+        }
+        vk_response = requests.get('/'.join([self.BASE_URL, self.PROFILE_INFO]), request_parametrs).json()
+        if 'error' in vk_response:
+            print('Auth token incorrect.')
+            self.auth_fail = True
 
     def prepare_parametrs(self, request_params):
         return {**self.def_request_parametrs, **request_params}
@@ -164,12 +176,11 @@ class VkUniqGroupFinder:
         groups_info = []
         vk_response = self.do_api_request('/'.join([self.BASE_URL, self.GROUPS_INFO]), request_parametrs)
         returned_groups = vk_response['response']
-        group_info = {}
         for group in returned_groups:
             if 'deactivated' in group:
-                groups_info.append({'gid':group['id'],'name':group['name'], 'members_count':'BANNED'})
+                groups_info.append({'gid': group['id'], 'name': group['name'], 'members_count': 'BANNED'})
             else:
-                groups_info.append({'gid':group['id'],'name':group['name'], 'members_count':group['members_count']})
+                groups_info.append({'gid': group['id'], 'name': group['name'], 'members_count': group['members_count']})
         self.groups_info_result = groups_info
 
     def prepare_uniq_groups(self):
@@ -207,6 +218,8 @@ class VkUniqGroupFinder:
             json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True, indent=4, ensure_ascii=False)
 
     def run(self):
+        if self.auth_fail:
+            return
         self.prepare_uniq_groups()
         self.get_groups_info()
         self.write_groups_result()
@@ -220,7 +233,7 @@ def parse_arguments():
     # parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
     # parser.add_argument('-a', dest='user_name', action='store', required=False, help='Auth Token')
     parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='File to write results')
-    parser.add_argument('-a', dest='auth_data', action='store',
+    parser.add_argument('-a', dest='auth_data', action='store', required=True,
                         help='Vk AuthToken. If not filled then default token is used.')
     if len(sys.argv) == 1:
         parser.print_help()
@@ -231,13 +244,12 @@ def parse_arguments():
 
 if __name__ == '__main__':
     start_arguments = parse_arguments()
-    if start_arguments['auth_data'] is None:
-        work_token = VK_TOKEN
-    else:
-        work_token = start_arguments['auth_data']
     if start_arguments['i'] is None:
-        uniq_group = VkUniqGroupFinder(work_token, user_name=start_arguments['u'], out_file=start_arguments['out_file'])
+        uniq_group = VkUniqGroupFinder(start_arguments['auth_data'], user_name=start_arguments['u'],
+                                       out_file=start_arguments['out_file'])
     else:
-        uniq_group = VkUniqGroupFinder(work_token, user_id=start_arguments['i'], out_file=start_arguments['out_file'])
+        uniq_group = VkUniqGroupFinder(start_arguments['auth_data'], user_id=start_arguments['i'],
+                                       out_file=start_arguments['out_file'])
+
     uniq_group.run()
     print('All done. bb hf')
