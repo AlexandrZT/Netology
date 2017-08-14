@@ -3,14 +3,16 @@
 VK Spy Game (Netology project)
 ~~~~~~~~~~~~~~~~~~~~~
 
-Spy game is project aimed to find out our differencies in interests between our community
-WARNING! VK Key currently is static and should be entered with command line argument
+Spy game is project aimed to find out our differencies in interests between
+our community
+WARNING! VK Key currently is static and should be entered with command line
+argument
 usage:
 
    >>> ugroups = VkUniqGroupFinder(VK_TOKEN, user_name, out_file)
    >>> ugroups.run()
 
-VK_TOKEN  - uniq access token from Vk API
+VK_TOKEN  - uniq Vk API access token
 user_name - Vk UserName or User ID
 out_file  - file to write unig groups and some group info
 
@@ -32,7 +34,8 @@ def clear_screen():
         os.system("clear")
 
 
-def printprogressbar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+def printprogressbar(iteration, total, prefix='', suffix='', decimals=1,
+                     length=100, fill='█'):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -40,11 +43,13 @@ def printprogressbar(iteration, total, prefix='', suffix='', decimals=1, length=
         total       - Required  : total iterations (Int)
         prefix      - Optional  : prefix string (Str)
         suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        decimals    - Optional  : positive number of decimals in
+        percent complete (Int)
         length      - Optional  : character length of bar (Int)
         fill        - Optional  : bar fill character (Str)
     """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    percent = ("{0:." + str(decimals) + "f}").format(
+        100 * (iteration / float(total)))
     filledlength = int(length * iteration // total)
     bar = fill * filledlength + '-' * (length - filledlength)
     print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
@@ -74,7 +79,8 @@ class VkUniqGroupFinder:
         'v': API_VER
     }
 
-    def __init__(self, auth_token, user_id=None, user_name=None, group_tolerance=0, out_file='outGroups.json'):
+    def __init__(self, auth_token, user_id=None, user_name=None,
+                 group_tolerance=0, out_file='outGroups.json'):
         self.group_tolerance = group_tolerance
         self.access_token = auth_token
         self.def_request_parametrs['access_token'] = auth_token
@@ -98,21 +104,30 @@ class VkUniqGroupFinder:
         api_return = None
         while continue_request:
             try:
-                vk_response = requests.get(req_url, self.prepare_parametrs(req_api_params)).json()
+                vk_response = requests.get(req_url,
+                                           self.prepare_parametrs(
+                                               req_api_params)
+                                           ).json()
                 if 'error' in vk_response:
-                    if vk_response['error']['error_code'] == 18:     # Page deleted or blocked
+                    if vk_response['error']['error_code'] == 18:
                         continue_request = False
                         continue
-                    elif vk_response['error']['error_code'] == 6:    # Too much requests
+                    elif vk_response['error']['error_code'] == 6:
                         time.sleep(timeout)
                         timeout *= 1.1
                         continue
-                    elif vk_response['error']['error_code'] == 7:    # Permission to perform this action is denied
+                    elif vk_response['error']['error_code'] == 7:
                         continue_request = False
                         continue
-                    elif vk_response['error']['error_code'] == 5 or \
-                            vk_response['error']['error_code'] == 28:  # Auth failed
-                        print('Authentification error. Code: {}.\nExit.'.format(vk_response['error']['error_code']))
+                    elif not (
+                        not (vk_response['error']['error_code'] == 5) and not (
+                            vk_response['error']['error_code'] == 28)):
+                        print(
+                            'Authentification error. '
+                            'Code: {}.\nExit.'.format(
+                                vk_response['error']['error_code']
+                            )
+                        )
                         self.auth_fail = True
                         continue_request = False
                         continue
@@ -120,7 +135,8 @@ class VkUniqGroupFinder:
             except Exception as e:
                 print('Wired. \n Error: {} \n Request parameters: {}. '
                       'Response status code: {},\n api response {}'.format(
-                       e, req_api_params, vk_response.status_code, vk_response.json()))
+                       e, req_api_params, vk_response.status_code,
+                       vk_response.json()))
             continue_request = False
         return api_return
 
@@ -128,7 +144,9 @@ class VkUniqGroupFinder:
         request_parametrs = {
             'user_ids': user_name,
         }
-        vk_response = self.do_api_request('/'.join([self.BASE_URL, self.USER_GET]), request_parametrs)
+        vk_response = self.do_api_request('/'.join([self.BASE_URL,
+                                                    self.USER_GET]),
+                                          request_parametrs)
         self.user_id = vk_response['response'][0]['id']
 
     def get_friends_list(self, req_user_id):
@@ -136,7 +154,9 @@ class VkUniqGroupFinder:
             'user_id': req_user_id,
             # 'count': 3    # DEBUG Limitter
         }
-        vk_response = self.do_api_request('/'.join([self.BASE_URL, self.FRIENDS_GET]), request_parametrs)
+        vk_response = self.do_api_request('/'.join([self.BASE_URL,
+                                                    self.FRIENDS_GET]),
+                                          request_parametrs)
         if self.auth_fail:
             return
         friends_list = vk_response['response']['items']
@@ -149,7 +169,9 @@ class VkUniqGroupFinder:
         }
         if self.auth_fail:
             return
-        vk_response = self.do_api_request('/'.join([self.BASE_URL, self.GROUPS_GET]), request_parametrs)
+        vk_response = self.do_api_request('/'.join([self.BASE_URL,
+                                                    self.GROUPS_GET]),
+                                          request_parametrs)
         if vk_response is None:
             in_groups = {-1}
         else:
@@ -164,13 +186,17 @@ class VkUniqGroupFinder:
         if self.auth_fail:
             return
         groups_info = []
-        vk_response = self.do_api_request('/'.join([self.BASE_URL, self.GROUPS_INFO]), request_parametrs)
+        vk_response = self.do_api_request(
+            '/'.join([self.BASE_URL, self.GROUPS_INFO]), request_parametrs
+        )
         returned_groups = vk_response['response']
         for group in returned_groups:
             if 'deactivated' in group:
-                groups_info.append({'gid': group['id'], 'name': group['name'], 'members_count': 'BANNED'})
+                groups_info.append({'gid': group['id'], 'name': group['name'],
+                                    'members_count': 'BANNED'})
             else:
-                groups_info.append({'gid': group['id'], 'name': group['name'], 'members_count': group['members_count']})
+                groups_info.append({'gid': group['id'], 'name': group['name'],
+                                    'members_count': group['members_count']})
         self.groups_info_result = groups_info
 
     def prepare_uniq_groups(self):
@@ -183,13 +209,13 @@ class VkUniqGroupFinder:
         user_groups = self.get_user_groups(self.user_id)
         friends_groups = {}
         print('Groups Loaded. Loading friends groups...')
-        printprogressbar(0, friends_count, prefix='Progress:', suffix='Complete', length=50)
+        printprogressbar(0, friends_count, prefix='Progress:',
+                         suffix='Complete', length=50)
         for friend in friends_list:
             friends_groups[friend] = self.get_user_groups(friend)
             friends_cntr += 1
-            printprogressbar(friends_cntr, friends_count, prefix='Progress:', suffix='Complete', length=50)
-            # print('Filling friends groups. Friend {} from {} friends'.format(friends_cntr, friends_count))
-            # clear_screen()
+            printprogressbar(friends_cntr, friends_count, prefix='Progress:',
+                             suffix='Complete', length=50)
         for group in user_groups:
             group_tolerance_cntr = 0
             include_group = True
@@ -205,7 +231,8 @@ class VkUniqGroupFinder:
 
     def write_groups_result(self):
         with open(self.output_file, 'w', encoding="utf-8") as wfile:
-            json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True, indent=4, ensure_ascii=False)
+            json.dump(fp=wfile, obj=self.groups_info_result, sort_keys=True,
+                      indent=4, ensure_ascii=False)
 
     def run(self):
         self.check_token()
@@ -217,12 +244,15 @@ class VkUniqGroupFinder:
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.', add_help=True)
+    parser = argparse.ArgumentParser(description='Vk Uniq Groups Finder.',
+                                     add_help=True)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-i', action='store', help='Vk user id')
     group.add_argument('-u', action='store', help='Vk user name')
-    parser.add_argument('-t', dest='g_tolerance', action='store', help='group tolerance')
-    parser.add_argument('-o', dest='out_file', action='store', default='outGroups.json', help='File to write results')
+    parser.add_argument('-t', dest='g_tolerance', action='store',
+                        help='group tolerance')
+    parser.add_argument('-o', dest='out_file', action='store',
+                        default='outGroups.json', help='File to write results')
     parser.add_argument('-a', dest='auth_data', action='store', required=True,
                         help='Vk AuthToken. Should be passed.')
     if len(sys.argv) == 1:
@@ -232,16 +262,22 @@ def parse_arguments():
         args = parser.parse_args()
     return vars(args)
 
+
 if __name__ == '__main__':
     start_arguments = parse_arguments()
     if start_arguments['i'] is None:
-        uniq_group = VkUniqGroupFinder(start_arguments['auth_data'], user_name=start_arguments['u'],
-                                       out_file=start_arguments['out_file'])
+        uniq_group = VkUniqGroupFinder(start_arguments['auth_data'],
+                                       user_name=start_arguments['u'],
+                                       out_file=start_arguments['out_file']
+                                       )
     else:
-        uniq_group = VkUniqGroupFinder(start_arguments['auth_data'], user_id=start_arguments['i'],
-                                       out_file=start_arguments['out_file'])
+        uniq_group = VkUniqGroupFinder(start_arguments['auth_data'],
+                                       user_id=start_arguments['i'],
+                                       out_file=start_arguments['out_file']
+                                       )
     if start_arguments['g_tolerance']:
-        if type(start_arguments['g_tolerance']) is int and start_arguments['g_tolerance'] >= 0:
+        if type(start_arguments['g_tolerance']) is int and \
+                        start_arguments['g_tolerance'] >= 0:
             uniq_group.group_tolerance = start_arguments['g_tolerance']
         else:
             print('Incorrect group tolerance, ignoring.')
